@@ -1,6 +1,7 @@
 import { Elysia, t } from "elysia";
 import { cors } from "@elysiajs/cors";
 
+// In-memory database for simplicity
 interface Item {
   id: number;
   name: string;
@@ -33,13 +34,16 @@ const app = new Elysia()
   .get("/", () => ({
     message: "Hello World!",
   }))
+  // GET all items
   .get("/api/items", () => items)
+  // GET single item by ID
   .get(
     "/api/items/:id",
-    ({ params: { id }, error }) => {
+    ({ params: { id }, set }) => {
       const item = items.find((item) => item.id === Number(id));
       if (!item) {
-        return error(404, { message: "Item not found" });
+        set.status = 404;
+        return { message: "Item not found" };
       }
       return item;
     },
@@ -49,9 +53,10 @@ const app = new Elysia()
       }),
     },
   )
+  // CREATE new item
   .post(
     "/api/items",
-    ({ body }) => {
+    ({ body, set }) => {
       const newItem: Item = {
         id: nextId++,
         name: body.name,
@@ -60,6 +65,7 @@ const app = new Elysia()
         updatedAt: new Date(),
       };
       items.push(newItem);
+      set.status = 201;
       return newItem;
     },
     {
@@ -69,12 +75,14 @@ const app = new Elysia()
       }),
     },
   )
+  // UPDATE item
   .put(
     "/api/items/:id",
-    ({ params: { id }, body, error }) => {
+    ({ params: { id }, body, set }) => {
       const index = items.findIndex((item) => item.id === Number(id));
       if (index === -1) {
-        return error(404, { message: "Item not found" });
+        set.status = 404;
+        return { message: "Item not found" };
       }
       items[index] = {
         ...items[index],
@@ -94,12 +102,14 @@ const app = new Elysia()
       }),
     },
   )
+  // DELETE item
   .delete(
     "/api/items/:id",
-    ({ params: { id }, error }) => {
+    ({ params: { id }, set }) => {
       const index = items.findIndex((item) => item.id === Number(id));
       if (index === -1) {
-        return error(404, { message: "Item not found" });
+        set.status = 404;
+        return { message: "Item not found" };
       }
       const deletedItem = items[index];
       items.splice(index, 1);
