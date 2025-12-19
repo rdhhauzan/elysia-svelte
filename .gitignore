@@ -81,6 +81,10 @@ out
 # Nuxt.js build / generate output
 .nuxt
 dist
+build
+
+# Bun lockfile
+bun.lockb
 
 # Gatsby files
 .cache/
@@ -97,6 +101,12 @@ dist
 
 # Sveltekit cache directory
 .svelte-kit/
+**/.svelte-kit/
+
+# SvelteKit build output
+**/build/
+**/.svelte-kit/
+**/package-lock.json
 
 # vitepress build output
 **/.vitepress/dist
